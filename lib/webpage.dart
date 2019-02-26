@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'webhandler.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class WebPage extends StatefulWidget {
   @override
@@ -12,25 +10,36 @@ class WebPageState extends State<WebPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("WebPage (DEBUG)"),
-      ),
-      body: new Container(
-        child: WebView(
-          key: UniqueKey(),
-          javascriptMode: JavascriptMode.unrestricted,
-          initialUrl: 'http://google.com',
+        appBar: new AppBar(
+          title: new Text('Futures Demo'),
         ),
+        body: new FutureBuilder(
+            future: WebHandler().csa(),
+            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              if (!snapshot.hasData)
+                return new Container();
+              return new ListView.builder(
+                scrollDirection: Axis.vertical,
+                padding: new EdgeInsets.all(6.0),
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int i){
+                  return _buildItem(snapshot.data[i].toString().split("@"));
+                  }
+                  );
+                },
+               ),
+              );
+            }
+
+  Widget _buildItem(List m) {
+    final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
+
+    return new ListTile(
+      title: new Text(
+        m[0],
+        style: _biggerFont,
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: (){
-          WebHandler().csa().then((unused) {
-            WebHandler().getHeaders(1).then ((head) {print("Headers:" + head);});
-            WebHandler().getHeaders(0).then ((head) {print("Headers:" + head);});
-          });
-          },
-          child: Icon(Icons.build)
-      ),
+      trailing: new Image.network(m[1]),
     );
   }
 }

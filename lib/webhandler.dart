@@ -8,27 +8,28 @@ class WebHandler {
 
   RegExp element = new RegExp(r'(<a href=".*\\?tp=.*[A-Z]">)');
 
-  Future<Map> csa() async{
+  Future<List> csa() async{
     final site = "http://mobile.csa.g12.br";
     await getCookie();
     final future = await getPage("http://mobile.csa.g12.br/EducaMobile/Home/Index");
     var res = future.body.toString().split('div');
-    var mapFull = new Map();
+    var listFull = new List();
     for (var x in res) {
       if (element.hasMatch(x)) {
         //print("Matches" + x);
-        var num = mapFull.length;
-
+        var num = listFull.length;
+        print(x);
         final name = x.substring(x.indexOf('<br />') + 6, x.indexOf('\n          </') - 1);
         final icon = site + x.substring(x.indexOf('img src="') + 9, x.indexOf('" style='));
         final ref = site + x.substring(55, x.indexOf("?tp="));
 
-        mapFull[num] = '${name}@${icon}@${ref}';
+        listFull.add(name + "@" + icon + "@" + ref);
 
       }
     }
-    print(mapFull.toString());
-    return mapFull;
+    print(listFull.toString());
+    print("1");
+    return listFull;
   }
 
   Future<http.Response> getCookie() async {
