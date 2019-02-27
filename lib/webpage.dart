@@ -10,6 +10,31 @@ class WebPageState extends State<WebPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      drawer: new Drawer(
+          child: new FutureBuilder(
+                future: WebHandler().csa(),
+                builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+                  if (!snapshot.hasData)
+                    return new Container();
+                  return new ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int i){
+                        if ( i == 0 ) {
+                          return DrawerHeader(
+                            child: new Text("DRAWER HEADER.."),
+                            decoration: new BoxDecoration(
+                                color: Colors.orange
+                            ),
+                          );
+                        } else {
+                          return _buildItem(snapshot.data[i - 1].toString().split("@"));
+                        }
+                      }
+                  );
+                },
+              ),
+      ),
         appBar: new AppBar(
           title: new Text('Futures Demo'),
         ),
@@ -40,6 +65,9 @@ class WebPageState extends State<WebPage> {
         style: _biggerFont,
       ),
       trailing: new Image.network(m[1]),
+      onTap: () {
+          WebHandler().getPage(m[2]);
+      },
     );
   }
 }

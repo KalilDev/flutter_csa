@@ -10,14 +10,12 @@ class WebHandler {
 
   Future<List> csa() async{
     final site = "http://mobile.csa.g12.br";
-    await getCookie();
     final future = await getPage("http://mobile.csa.g12.br/EducaMobile/Home/Index");
     var res = future.body.toString().split('div');
     var listFull = new List();
     for (var x in res) {
       if (element.hasMatch(x)) {
         //print("Matches" + x);
-        var num = listFull.length;
         print(x);
         final name = x.substring(x.indexOf('<br />') + 6, x.indexOf('\n          </') - 1);
         final icon = site + x.substring(x.indexOf('img src="') + 9, x.indexOf('" style='));
@@ -51,10 +49,15 @@ class WebHandler {
   }
 
   Future<http.Response> getPage(String url) async {
+    print(url);
+    await getCookie();
     final getResponse = await http.get(
         url,
         headers: headers);
 
+    for (var x in getResponse.body.toString().split("\n")) {
+      print (x);
+    }
     return getResponse;
   }
 
